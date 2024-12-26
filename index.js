@@ -24,10 +24,12 @@ const firebaseConfig = {
     appId: "1:350473624117:web:5216b63f7412a1b563af7c"
 };
 
+// Initialize Firebase app
 const appFirebase = initializeApp(firebaseConfig);
 const dbRef = ref(getDatabase(appFirebase)); 
 
-// GET all products
+
+//////////// GET all products
 app.get('/api/products', async (req, res) => {
   try {
     const snapshot = await get(child(dbRef, 'products')); 
@@ -42,7 +44,7 @@ app.get('/api/products', async (req, res) => {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Failed to fetch products' });
   }
-});
+}); //old get products
 
 // GET a single product by ID
 app.get('/api/products/:id', async (req, res) => {
@@ -64,6 +66,8 @@ app.get('/api/products/:id', async (req, res) => {
 // POST a new product
 app.post('/api/products', async (req, res) => {
   try {
+    
+    console.log("creating a product");
     const newProduct = req.body; 
     const newProductRef = child(dbRef, `products/${Date.now()}`); 
     await set(newProductRef, newProduct);
@@ -77,6 +81,7 @@ app.post('/api/products', async (req, res) => {
 // PUT update an existing product
 app.put('/api/products/:id', async (req, res) => {
   try {
+    console.log("Updating product");
     const productId = req.params.id;
     const updatedProduct = req.body;
     const productRef = child(dbRef, `products/${productId}`);
@@ -91,6 +96,7 @@ app.put('/api/products/:id', async (req, res) => {
 // DELETE a product
 app.delete('/api/products/:id', async (req, res) => {
   try {
+    console.log("deletion is going to be executed");
     const productId = req.params.id;
     const productRef = child(dbRef, `products/${productId}`);
     await set(productRef, null); 
@@ -98,6 +104,20 @@ app.delete('/api/products/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting product:', error);
     res.status(500).json({ error: 'Failed to delete product' });
+  }
+});
+
+// Post a new Order
+app.post('/api/orders', async (req, res) => {
+  try {
+    const newOrder = req.body; 
+    // Validate orderData here 
+    const newOrderRef = child(dbRef, `orders/${Date.now()}`); 
+    await set(newOrderRef, newOrder);
+    res.status(201).json(newOrder); 
+  } catch (error) {
+    console.error('Error saving order:', error);
+    res.status(500).json({ error: 'Failed to save order' });
   }
 });
 
